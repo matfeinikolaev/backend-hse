@@ -10,7 +10,18 @@ class Payload(BaseModel):
     numbers: list
     delays: list
 
-async def async_task(num: int, delay: float) -> str:
+class Result(BaseModel):
+    number: float
+    square: float
+    delay: float
+    time: float
+
+class Response(BaseModel):
+    results: list
+    total_time: float
+    parallel_faster_than_sequential: bool
+
+async def async_task(num: float, delay: float) -> Result:
     start = time.time()
     await asyncio.sleep(delay)
     square = num**2
@@ -18,7 +29,7 @@ async def async_task(num: int, delay: float) -> str:
     return {"number": num, "square": square, "delay": delay, "time": duration}
 
 @app.post("/calculate")
-async def calculate(pl: Payload):
+async def calculate(pl: Payload) -> Response:
     start = time.time()
     total_delay = sum([delay for delay in pl.delays])
     tasks = []
